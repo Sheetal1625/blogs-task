@@ -31,9 +31,5 @@ The server will start running on port 5001 by default.
 
 # API Endpoints
 
-1. POST /posts: Create a new post (requires authentication).
-2. GET /posts: Get all recent posts (requires authentication).
-3. GET /posts/{id}: Get a post by ID (requires authentication).
-4. DELETE /posts/{id}: Delete a post by ID (requires authentication).
-5. PUT /posts/{id}: Update a post by ID (requires authentication).
-6. GET /posts/author/{authorId}: Get all posts by author ID (requires authentication).
+1. POST /api/author: Add a new author.
+2. POST /api/auth: Author login to generate JWT token.
