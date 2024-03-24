@@ -11,7 +11,6 @@ import {
 } from "@mui/material";
 import { Delete } from "@mui/icons-material";
 import { useLocation, useNavigate } from "react-router-dom";
-import axios from "axios";
 import { deleteBlog } from "../actions/Blogs";
 
 export const DeleteBlog = () => {
