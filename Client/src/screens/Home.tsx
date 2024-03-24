@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Grid, Card, CardContent, Typography, Box, Container, CssBaseline, Avatar, Button } from "@mui/material";
-import { Add, Delete, Edit, Logout } from "@mui/icons-material";
+import { Add, Delete, Edit, Logout, SentimentDissatisfied } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { Post } from "../models/Post";
 import { fetchBlogs } from "../actions/Blogs";
@@ -88,7 +88,7 @@ export const Home = () => {
           </Box>
           <Box sx={{ mt: 5 }}>
             <Grid container spacing={3}>
-              {blogs.map((blog: Post) => (
+              {blogs ? blogs.map((blog: Post) => (
                 <Grid item key={blog.id} xs={12} sm={6} md={4}>
                   <Card sx={{ height: 200, display: "flex", flexDirection: "column" }}>
                     <CardContent sx={{ flexGrow: 1, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
@@ -115,7 +115,26 @@ export const Home = () => {
                     </CardContent>
                   </Card>
                 </Grid>
-              ))}
+              ))
+              :
+                <Box
+                  sx={{
+                    mt: 10,
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                  }}
+                >
+                  <Typography variant="h6" color="text.secondary">
+                    You haven't created any blogs yet!!!
+                  </Typography>
+                  <Avatar
+                    sx={{ mt: 10, bgcolor: "primary.main", color: "primary.contrastText", "&:hover": { transform: "scale(1.1)" } }}
+                  >
+                    < SentimentDissatisfied />
+                  </Avatar>
+                </Box>
+              }
             </Grid>
           </Box>
         </Box >
