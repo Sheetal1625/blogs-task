@@ -199,7 +199,7 @@ params := mux.Vars(request)
 	if err != nil {
 		log.Fatal(err)
 	}
-	response.WriteHeader(http.StatusNoContent)
+	response.WriteHeader(http.StatusOK)
 }
 
 func main(){

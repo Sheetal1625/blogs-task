@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Grid, Card, CardContent, Typography, Box, Container, CssBaseline, Avatar, Button } from "@mui/material";
-import { AccountBox, Add, Delete, Edit, Logout } from "@mui/icons-material";
+import { Add, Delete, Edit, Logout } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { Post } from "../models/Post";
 import { fetchBlogs } from "../actions/Blogs";

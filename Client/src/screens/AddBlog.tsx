@@ -13,8 +13,6 @@ import { Publish } from "@mui/icons-material";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Post } from "../models/Post";
-import axios from "axios";
-import { decodeJwt } from "../utils/DecodeJwt";
 import { addBlog } from "../actions/Blogs";
 
 export const AddBlog = () => {

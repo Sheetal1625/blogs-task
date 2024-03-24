@@ -14,7 +14,7 @@ import {
 } from "@mui/material";
 import { LockOutlined, Visibility, VisibilityOff } from "@mui/icons-material";
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Author } from "../models/Author";
 import { addAuthor } from "../actions/Author";
 
