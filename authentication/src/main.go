@@ -36,14 +36,14 @@ type Credential struct{
 
 
 // Database connection string
-var dsn string = "root:root@tcp(localhost:3306)/blogs"
+var dbHost string = os.Getenv("DATABASE_BLOGS")
 
-// Secret key for JWT signing
-var mySignInKey string = "Q2w4e6R8t!y@uAsD"
+// JWT signing key.
+var secretKey string = os.Getenv("MY_SIGN_IN_KEY")
 
 // Function to establish a database connection
 func getDB() *sql.DB{
-db, err := sql.Open("mysql", dsn)
+db, err := sql.Open("mysql", dbHost)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -102,7 +102,7 @@ func GetAuthorByEmail(email string) Author{
 func CreateToken(authorId uint64, author Author) (string, error) {
 	var err error
 	// Set the secret key for JWT signing
-	os.Setenv("ACCESS_SECRET", mySignInKey)
+	os.Setenv("ACCESS_SECRET", secretKey)
 	atClaims := jwt.MapClaims{}
 	atClaims["authorized"] = true
 	atClaims["authorId"] = authorId
