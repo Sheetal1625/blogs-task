@@ -9,8 +9,33 @@ import { MyBlogs } from './screens/MyBlogs';
 import Login from './screens/Login';
 import { Home } from './screens/Home';
 import ProtectedRoute from './screens/ProtectedRoute';
+import { createTheme, ThemeProvider } from '@mui/material';
+import { blue, grey } from '@mui/material/colors';
+import App from './App';
 
+const theme = createTheme({
+  palette: {
+    mode: 'light', // Default theme mode is light
+    primary: {
+      main: blue[500],
+    },
+    secondary: {
+      main: grey[500],
+    },
+  },
+});
 
+const darkTheme = createTheme({
+  palette: {
+    mode: 'dark',
+    primary: {
+      main: blue[200],
+    },
+    secondary: {
+      main: grey[200],
+    },
+  },
+});
 
 const router = createBrowserRouter([
   {
@@ -58,7 +83,7 @@ const root = ReactDOM.createRoot(
 );
 root.render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <App/>
   </React.StrictMode>
 );
 
