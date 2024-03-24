@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strings"
 	"log"
+	"os"
 	"github.com/dgrijalva/jwt-go"
 	"net/http"
 	"encoding/json"
@@ -35,14 +36,14 @@ type Post struct {
 }
 
 // Database connection string.
-var dsn string = "root:root@tcp(localhost:3306)/blogs"
+var dbHost string = os.Getenv("DATABASE_BLOGS")
 
 // JWT signing key.
-var mySignInKey string = "Q2w4e6R8t!y@uAsD"
+var secretKey string = os.Getenv("MY_SIGN_IN_KEY")
 
 // Function to establish a database connection.
 func getDB() *sql.DB{
-db, err := sql.Open("mysql", dsn)
+db, err := sql.Open("mysql", dbHost)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -69,7 +70,7 @@ func AuthMiddleware(next http.Handler) http.Handler {
 		tokenString := strings.Replace(authHeader, "Bearer ", "", 1)
 
 		token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-			return []byte(mySignInKey), nil
+			return []byte(secretKey), nil
 		})
 
 		if err != nil || !token.Valid {
@@ -104,10 +105,8 @@ func GetAllRecentPosts(response http.ResponseWriter, request *http.Request){
 
 // GetPostById retrieves a post by post ID.
 func GetPostById(response http.ResponseWriter, request *http.Request){
-// params := mux.Vars(request)
-// 	id, err := strconv.Atoi(params["id"])
-	var id string
-	 json.NewDecoder(request.Body).Decode(&id)
+params := mux.Vars(request)
+	id, err := strconv.Atoi(params["id"])
 	query := "SELECT * FROM POSTS WHERE ID = ?;"
 	db := getDB()
 	results, err := db.Query(query, id)
@@ -204,7 +203,6 @@ params := mux.Vars(request)
 }
 
 func main(){
-	
 	router := mux.NewRouter()
 	router.Handle("/posts",AuthMiddleware(http.HandlerFunc(CreatePost))).Methods("POST")
 	router.Handle("/posts",AuthMiddleware(http.HandlerFunc(GetAllRecentPosts))).Methods("GET")
