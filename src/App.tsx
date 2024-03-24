@@ -10,7 +10,7 @@ import { Home } from './screens/Home';
 import ProtectedRoute from './screens/ProtectedRoute';
 import { Avatar, createTheme, Switch, ThemeProvider } from '@mui/material';
 import { blue, grey } from '@mui/material/colors';
-import { Brightness1, DarkMode } from '@mui/icons-material';
+import { DarkMode } from '@mui/icons-material';
 
 const theme = createTheme({
     palette: {
