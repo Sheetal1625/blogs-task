@@ -18,6 +18,12 @@ var db *sql.DB = database.GetDB()
 
 // GetAllRecentPosts retrieves all recent posts.
 func GetAllRecentPosts(response http.ResponseWriter, request *http.Request) {
+	defer func() {
+		if r := recover(); r != nil {
+			log.Printf("Recovered from panic: %v", r)
+			http.Error(response, "Internal Server Error", http.StatusInternalServerError)
+		}
+	}()
 	fmt.Printf("Request for : %s\n", request.URL.Path)
 	var values models.Post
 	json.NewDecoder(request.Body).Decode(&values)
