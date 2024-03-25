@@ -15,7 +15,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 )
 
-var db *sql.DB = database.GetDB()
+var DB *sql.DB = database.GetDB()
 
 // JWT signing key.
 var secretKey string = os.Getenv("MY_SIGN_IN_KEY")
@@ -29,7 +29,7 @@ func AddAuthor(response http.ResponseWriter, request *http.Request) {
 	json.NewDecoder(request.Body).Decode(&values)
 	// Insert data into the table
 	query := "INSERT INTO authors (firstName, middleName, lastName, mobile, email, password) VALUES (?, ?, ?, ?, ?, ?);"
-	stmt, err := db.Prepare(query)
+	stmt, err := DB.Prepare(query)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -46,7 +46,7 @@ func AddAuthor(response http.ResponseWriter, request *http.Request) {
 // Function to retrieve an author by email from the database
 func GetAuthorByEmail(email string) models.Author {
 	query := "SELECT * FROM AUTHORS WHERE email = ?;"
-	results, err := db.Query(query, email)
+	results, err := DB.Query(query, email)
 	var author models.Author
 	for results.Next() {
 		var temp models.Author
@@ -76,6 +76,28 @@ func CreateToken(authorId uint64, author models.Author) (string, error) {
 		return "", errors.New("an error occured during the create token")
 	}
 	return token, nil
+}
+
+// Handler function to delete an author by email
+func DeleteAuthorByEmail(email string) {
+
+	if email == "" {
+		return
+	}
+
+	// Delete author from the database
+	query := "DELETE FROM authors WHERE email = ?"
+	stmt, err := DB.Prepare(query)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(email)
+	if err != nil {
+		return
+	}
+
 }
 
 // Handler function for author login
