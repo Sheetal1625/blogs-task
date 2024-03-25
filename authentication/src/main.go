@@ -15,8 +15,8 @@ func main() {
 	router := mux.NewRouter()
 
 	// Define HTTP routes for adding an author and author login
-	router.HandleFunc("/api/author", handlers.AddAuthor).Methods("POST")
-	router.HandleFunc("/api/auth", handlers.Login).Methods("POST")
+	router.HandleFunc("/auth/register", handlers.AddAuthor).Methods("POST")
+	router.HandleFunc("/auth/login", handlers.Login).Methods("POST")
 	// Setup CORS handling for the router
 	corsHandler := cors.New(cors.Options{
 		AllowedMethods: []string{"POST"},
