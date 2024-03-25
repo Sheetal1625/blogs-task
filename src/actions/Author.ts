@@ -1,12 +1,5 @@
-import { Author } from "../models/Author";
+import { IAuthor } from "../models/Author";
 
-export const START_LOADING = "START_LOADING";
-
-export const ADD_AUTHOR_SUCCESS = "ADD_BOOK_SUCCESS";
-export const ADD_AUTHOR_ERROR = "ADD_BOOK_ERROR";
-
-export const LOGIN_SUCCESS = "UPDATE_BOOK_SUCCESS";
-export const LOGIN_ERROR = "UPDATE_BOOK_ERROR";
 
 export const login = async (email: string, password: string): Promise<boolean> => {
   try {
@@ -32,7 +25,7 @@ export const login = async (email: string, password: string): Promise<boolean> =
   }
 };
 
-export const addAuthor = async (author: Author): Promise<boolean> => {
+export const addAuthor = async (author: IAuthor): Promise<boolean> => {
   try {
     const url = process.env.REACT_APP_REGISTER_URL || "";
     const response = await fetch(`${url}`, {

@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useContext } from "react";
 import {
   Avatar,
   Box,
@@ -13,15 +13,17 @@ import { Update } from "@mui/icons-material";
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { updateBlog } from "../actions/Blogs";
+import { BlogContext } from "../contexts/BlogContext";
 
 export const UpdateBlog = () => {
   const { state } = useLocation();
   const blog = state.post;
   const [title, setTitle] = useState(blog.title);
   const [content, setContent] = useState(blog.content);
+  const {dispatch} = useContext(BlogContext)
   const navigate = useNavigate()
   const handleUpdateClick = () => {
-    updateBlog({ ...blog, title: title, content: content });
+    updateBlog({ ...blog, title: title, content: content })(dispatch);
     navigate("/my-blogs");
   };
 
