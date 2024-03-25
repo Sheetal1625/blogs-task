@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useContext } from "react";
 import {
   Avatar,
   Box,
@@ -12,14 +12,16 @@ import {
 import { Publish } from "@mui/icons-material";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Post } from "../models/Post";
+import { IBlog } from "../models/Blog";
 import { addBlog } from "../actions/Blogs";
+import { BlogContext } from "../contexts/BlogContext";
 
 export const AddBlog = () => {
-  const [blog, setBlog] = useState<Post>({ id: "", content: "", publishedAt: "", authorId: "", title: "" })
+  const [blog, setBlog] = useState<IBlog>({ id: "", content: "", publishedAt: "", authorId: "", title: "" })
   const navigate = useNavigate()
+  const {dispatch} = useContext(BlogContext)
   const handlePublishClick = () => {
-    addBlog(blog);
+    addBlog(blog)(dispatch);
     navigate("/my-blogs");
   };
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

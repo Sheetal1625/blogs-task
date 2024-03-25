@@ -1,44 +1,51 @@
-import React, { useState, useEffect } from "react";
-import { Grid, Card, CardContent, Typography, Box, Container, CssBaseline, Avatar, Button } from "@mui/material";
-import { Add, Delete, Edit, Logout, SentimentDissatisfied } from "@mui/icons-material";
+import React, { useState, useEffect, useContext } from "react";
+import {
+  Grid,
+  Card,
+  CardContent,
+  Typography,
+  Box,
+  Container,
+  CssBaseline,
+  Avatar,
+  Button,
+} from "@mui/material";
+import {
+  Add,
+  Delete,
+  Edit,
+  Logout,
+  SentimentDissatisfied,
+} from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
-import { Post } from "../models/Post";
+import { IBlog } from "../models/Blog";
 import { fetchBlogs } from "../actions/Blogs";
-
+import { BlogContext } from "../contexts/BlogContext";
 
 export const Home = () => {
-  const navigate = useNavigate()
-  const [isFocused, setIsFocused] = useState(true)
-  const [blogs, setBlogs] = useState<Post[]>([]
-  );
-
-  async function fetchAllBlogs() {
-    const data = await fetchBlogs();
-    setBlogs(data)
-  }
+  const navigate = useNavigate();
+  const { state, dispatch } = useContext(BlogContext);
+  const [blogs, setBlogs] = useState<IBlog[]>(state.blogs);
 
   useEffect(() => {
     // Fetch blogs from API or database
-    fetchAllBlogs()
-  }, [isFocused]);
-  const handleEditClick = (blog: Post) => {
-    setIsFocused(false)
-    navigate("/update-blog", { state: { post: blog } })
-    setIsFocused(true)
+    fetchBlogs()(dispatch);
+  }, []);
+  useEffect(() => {
+    setBlogs(state.blogs)
+  },[state]);
+  const handleEditClick = (blog: IBlog) => {
+    navigate("/update-blog", { state: { post: blog } });
   };
 
-  const handleDeleteClick = (blog: Post) => {
-    setIsFocused(false)
-    navigate("/delete-blog", { state: { post: blog } })
-    setIsFocused(true)
+  const handleDeleteClick = (blog: IBlog) => {
+    navigate("/delete-blog", { state: { post: blog } });
   };
   const handleCreateClick = () => {
-    setIsFocused(false)
-    navigate("/add-blog")
-    setIsFocused(true)
+    navigate("/add-blog");
   };
   const handleLogoutClick = () => {
-    localStorage.removeItem("token")
+    localStorage.removeItem("token");
     navigate("/login");
   };
   return (
@@ -62,10 +69,11 @@ export const Home = () => {
               alignItems: "center",
             }}
           >
-            <Typography variant="h3" onClick={() => navigate("/my-blogs")}>MyBlogs</Typography>
+            <Typography variant="h3" onClick={() => navigate("/my-blogs")}>
+              MyBlogs
+            </Typography>
 
             <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-
               <Button
                 variant="contained"
                 color="primary"
@@ -88,35 +96,57 @@ export const Home = () => {
           </Box>
           <Box sx={{ mt: 5 }}>
             <Grid container spacing={3}>
-              {blogs ? blogs.map((blog: Post) => (
-                <Grid item key={blog.id} xs={12} sm={6} md={4}>
-                  <Card sx={{ height: 200, display: "flex", flexDirection: "column" }}>
-                    <CardContent sx={{ flexGrow: 1, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
-                      <Typography variant="h5" component="div">
-                        {blog.title}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        {blog.content}
-                      </Typography>
-                      <Box sx={{ display: "flex", gap: 1 }}>
-                        <Avatar
-                          sx={{ bgcolor: "primary.main", color: "primary.contrastText", "&:hover": { transform: "scale(1.1)" } }}
-                          onClick={() => handleEditClick(blog)}
-                        >
-                          <Edit />
-                        </Avatar>
-                        <Avatar
-                          sx={{ bgcolor: "primary.main", color: "primary.contrastText", "&:hover": { transform: "scale(1.1)" } }}
-                          onClick={() => handleDeleteClick(blog)}
-                        >
-                          <Delete />
-                        </Avatar>
-                      </Box>
-                    </CardContent>
-                  </Card>
-                </Grid>
-              ))
-              :
+              {blogs ? (
+                blogs.map((blog: IBlog) => (
+                  <Grid item key={blog.id} xs={12} sm={6} md={6}>
+                    <Card
+                      sx={{
+                        height: 200,
+                        display: "flex",
+                        flexDirection: "column",
+                      }}
+                    >
+                      <CardContent
+                        sx={{
+                          flexGrow: 1,
+                          display: "flex",
+                          flexDirection: "column",
+                          justifyContent: "space-between",
+                        }}
+                      >
+                        <Typography variant="h5" component="div">
+                          {blog.title}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          {blog.content}
+                        </Typography>
+                        <Box sx={{ display: "flex", gap: 1 }}>
+                          <Avatar
+                            sx={{
+                              bgcolor: "primary.main",
+                              color: "primary.contrastText",
+                              "&:hover": { transform: "scale(1.1)" },
+                            }}
+                            onClick={() => handleEditClick(blog)}
+                          >
+                            <Edit />
+                          </Avatar>
+                          <Avatar
+                            sx={{
+                              bgcolor: "primary.main",
+                              color: "primary.contrastText",
+                              "&:hover": { transform: "scale(1.1)" },
+                            }}
+                            onClick={() => handleDeleteClick(blog)}
+                          >
+                            <Delete />
+                          </Avatar>
+                        </Box>
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                ))
+              ) : (
                 <Box
                   sx={{
                     mt: 10,
@@ -129,18 +159,22 @@ export const Home = () => {
                     You haven't created any blogs yet!!!
                   </Typography>
                   <Avatar
-                    sx={{ mt: 10, bgcolor: "primary.main", color: "primary.contrastText", "&:hover": { transform: "scale(1.1)" } }}
+                    sx={{
+                      mt: 10,
+                      bgcolor: "primary.main",
+                      color: "primary.contrastText",
+                      "&:hover": { transform: "scale(1.1)" },
+                    }}
                   >
-                    < SentimentDissatisfied />
+                    <SentimentDissatisfied />
                   </Avatar>
                 </Box>
-              }
+              )}
             </Grid>
           </Box>
-        </Box >
-      </Container >
+        </Box>
+      </Container>
     </>
-
   );
 };
 

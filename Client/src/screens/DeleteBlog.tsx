@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useContext } from "react";
 import {
   Avatar,
   Box,
@@ -12,14 +12,16 @@ import {
 import { Delete } from "@mui/icons-material";
 import { useLocation, useNavigate } from "react-router-dom";
 import { deleteBlog } from "../actions/Blogs";
+import { BlogContext } from "../contexts/BlogContext";
 
 export const DeleteBlog = () => {
   const { state } = useLocation();
   const blog = state.post;
   const navigate = useNavigate()
 
+  const {dispatch} = useContext(BlogContext)
   const handleDeleteClick = () => {
-    deleteBlog(blog);
+    deleteBlog(blog)(dispatch);
     navigate("/my-blogs")
   };
   return (

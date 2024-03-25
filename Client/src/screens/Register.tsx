@@ -15,11 +15,11 @@ import {
 import { LockOutlined, Visibility, VisibilityOff } from "@mui/icons-material";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Author } from "../models/Author";
+import { IAuthor } from "../models/Author";
 import { addAuthor } from "../actions/Author";
 
 export const Register = () => {
-  const [author, setAuthor] = useState<Author>(
+  const [author, setAuthor] = useState<IAuthor>(
     {
       id: "", firstName: "", middleName: "", lastName: "", email: "", mobile: "", password: ""
     }
@@ -94,7 +94,6 @@ export const Register = () => {
               </Grid>
               <Grid item xs={12}>
                 <TextField
-                  required
                   fullWidth
                   name="MiddleName"
                   label="MiddleName"
