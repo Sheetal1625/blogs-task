@@ -1,5 +1,7 @@
-import { IAuthor } from "../models/Author";
 
+import "react-toastify/dist/ReactToastify.css";
+import { IAuthor } from "../models/Author";
+import { showFailureToast, showSuccessToast } from "../utils/toaster";
 
 export const login = async (email: string, password: string): Promise<boolean> => {
   try {
@@ -12,11 +14,12 @@ export const login = async (email: string, password: string): Promise<boolean> =
       }),
     });
     if (!response.ok) {
-      alert("Pleas provide correct credentials!!!");
+      showFailureToast("Pleas provide correct credentials!!!")
       return false;
     } else {
       let token = await response.json();
       localStorage.setItem("token", token);
+      showSuccessToast("Successfully logged in")
       return true;
     }
   } catch (error) {
@@ -40,11 +43,10 @@ export const addAuthor = async (author: IAuthor): Promise<boolean> => {
       method: "POST",
     });
     if (!response.ok) {
-      alert("Pleas provide correct credentials!!!");
+      showFailureToast(`Unable to register user !!`)
       return false;
     } else {
-      let token = await response.json();
-      localStorage.setItem("token", token);
+      showSuccessToast(`Successfully registered !!`)
       return true;
     }
   } catch (error) {

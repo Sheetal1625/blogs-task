@@ -51,21 +51,20 @@ export const addBlog =  (blog: IBlog) => async(dispatch :React.Dispatch<IBlogAct
     const url = process.env.REACT_APP_BLOG_URL || "";
     const token = localStorage.getItem("token");
     const payload = decodeJwt(token || "");
-    await axios.post(
-      url,
-      {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
         authorId: payload?.authorId,
         title: blog.title,
         content: blog.content,
         publishedAt: Date.now().toLocaleString(),
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+      },),
+    });
+    await response.json();
     dispatch({
       type: ADD_BLOG_SUCCESS,
     });

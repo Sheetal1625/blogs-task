@@ -12,6 +12,8 @@ import { Avatar, createTheme, Switch, ThemeProvider } from '@mui/material';
 import { blue, grey } from '@mui/material/colors';
 import { DarkMode } from '@mui/icons-material';
 import { BlogContextProvider } from './contexts/BlogContext';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const theme = createTheme({
     palette: {
@@ -89,6 +91,7 @@ const App = () => {
     <React.StrictMode>
       <BlogContextProvider>
       <ThemeProvider theme={darkMode ? darkTheme : theme}>
+        <ToastContainer/>
     <div style={{ display: 'flex', flexDirection: "column", justifyContent: "flex-start", zIndex: 0, position: 'relative' }}>
           <RouterProvider router={router} />
           <div style={{ position: 'absolute', top: 20, right: 0, zIndex: 1, display:"flex", flexDirection:"row" }}>

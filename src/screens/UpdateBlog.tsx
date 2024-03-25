@@ -14,6 +14,8 @@ import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { updateBlog } from "../actions/Blogs";
 import { BlogContext } from "../contexts/BlogContext";
+import "react-toastify/dist/ReactToastify.css";
+
 
 export const UpdateBlog = () => {
   const { state } = useLocation();
