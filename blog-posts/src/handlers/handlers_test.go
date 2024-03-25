@@ -47,7 +47,6 @@ func TestCreatePost(t *testing.T) {
 }
 
 func TestUpdatePostById(t *testing.T) {
-	//database.SetupTestDB()
 	postData := models.Post{
 		Title:   "Updated Test Post",
 		Content: "This is an updated test post",
@@ -71,7 +70,6 @@ func TestUpdatePostById(t *testing.T) {
 }
 
 func TestDeletePostById(t *testing.T) {
-	//database.SetupTestDB()
 	req, err := http.NewRequest("DELETE", "/posts/1", nil)
 	if err != nil {
 		t.Fatal(err)
