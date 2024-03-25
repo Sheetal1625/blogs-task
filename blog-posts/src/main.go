@@ -2,17 +2,18 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
-	"strings"
-	"log"
-	"os"
-	"github.com/dgrijalva/jwt-go"
-	"net/http"
 	"encoding/json"
+	"fmt"
+	"log"
+	"net/http"
+	"os"
 	"strconv"
+	"strings"
+
+	"github.com/dgrijalva/jwt-go"
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
-	_ "github.com/go-sql-driver/mysql"
 )
 
 // Author struct represents author data.
@@ -21,7 +22,7 @@ type Author struct {
 	FirstName  string `json:"firstName"`
 	MiddleName string `json:"middleName"`
 	LastName   string `json:"lastName"`
-	Mobile     string    `json:"mobile`
+	Mobile     string `json:"mobile`
 	Email      string `json:"email`
 	Password   string `json:"password`
 }
@@ -41,9 +42,12 @@ var dbHost string = os.Getenv("DATABASE_BLOGS")
 // JWT signing key.
 var secretKey string = os.Getenv("MY_SIGN_IN_KEY")
 
+// Database Connection
+var db *sql.DB = getDB()
+
 // Function to establish a database connection.
-func getDB() *sql.DB{
-db, err := sql.Open("mysql", dbHost)
+func getDB() *sql.DB {
+	db, err := sql.Open("mysql", dbHost)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -52,7 +56,6 @@ db, err := sql.Open("mysql", dbHost)
 	if err != nil {
 		log.Fatal("Error connecting to the database: ", err)
 	}
-	fmt.Println("Connected to MySQL database!")
 
 	return db
 
@@ -83,17 +86,16 @@ func AuthMiddleware(next http.Handler) http.Handler {
 }
 
 // GetAllRecentPosts retrieves all recent posts.
-func GetAllRecentPosts(response http.ResponseWriter, request *http.Request){
+func GetAllRecentPosts(response http.ResponseWriter, request *http.Request) {
 	var values Post
 	json.NewDecoder(request.Body).Decode(&values)
-	
+
 	query := "SELECT * FROM POSTS ORDER BY PublishedAt DESC;"
-	db := getDB()
 	results, err := db.Query(query)
 	var posts []Post
 	for results.Next() {
 		var temp Post
-		err = results.Scan(&temp.ID, &temp.AuthorId, &temp.Title, &temp.PublishedAt, &temp.Content)
+		err = results.Scan(&temp.ID, &temp.AuthorId, &temp.Title, &temp.Content, &temp.PublishedAt)
 		if err != nil {
 			panic(err.Error())
 		}
@@ -104,11 +106,10 @@ func GetAllRecentPosts(response http.ResponseWriter, request *http.Request){
 }
 
 // GetPostById retrieves a post by post ID.
-func GetPostById(response http.ResponseWriter, request *http.Request){
-params := mux.Vars(request)
+func GetPostById(response http.ResponseWriter, request *http.Request) {
+	params := mux.Vars(request)
 	id, err := strconv.Atoi(params["id"])
 	query := "SELECT * FROM POSTS WHERE ID = ?;"
-	db := getDB()
 	results, err := db.Query(query, id)
 	var post Post
 	for results.Next() {
@@ -122,16 +123,15 @@ params := mux.Vars(request)
 	json.NewEncoder(response).Encode(post)
 }
 
-//get posts by authorId
-func GetAllPostsByAuthorId(response http.ResponseWriter, request *http.Request){
-params := mux.Vars(request)
+// get posts by authorId
+func GetAllPostsByAuthorId(response http.ResponseWriter, request *http.Request) {
+	params := mux.Vars(request)
 	authorId, err := strconv.Atoi(params["authorId"])
 	if err != nil {
 		http.Error(response, "Invalid author ID", http.StatusBadRequest)
 		return
 	}
 	query := "SELECT * FROM POSTS WHERE authorId = ?;"
-	db := getDB()
 	results, err := db.Query(query, authorId)
 	var posts []Post
 	for results.Next() {
@@ -146,13 +146,12 @@ params := mux.Vars(request)
 }
 
 // CreatePost creates a new post.
-func CreatePost(response http.ResponseWriter, request *http.Request){
-var values Post
-	 json.NewDecoder(request.Body).Decode(&values)
-	
+func CreatePost(response http.ResponseWriter, request *http.Request) {
+	var values Post
+	json.NewDecoder(request.Body).Decode(&values)
+
 	// Insert data into the table
 	query := "INSERT INTO posts (id, authorId, title, content, publishedAt) VALUES (?, ?, ?, ?, NOW());"
-	db := getDB()
 	stmt, err := db.Prepare(query)
 	if err != nil {
 		log.Fatal(err)
@@ -168,14 +167,13 @@ var values Post
 }
 
 // UpdatePostById updates a post by post ID.
-func UpdatePostById(response http.ResponseWriter, request *http.Request){
-params := mux.Vars(request)
+func UpdatePostById(response http.ResponseWriter, request *http.Request) {
+	params := mux.Vars(request)
 	id, err := strconv.Atoi(params["id"])
 	var values Post
-	 json.NewDecoder(request.Body).Decode(&values)
-	
+	json.NewDecoder(request.Body).Decode(&values)
+
 	query := "UPDATE posts SET title = ? , content = ? , publishedAt = NOW() WHERE id = ?;"
-	db := getDB()
 	stmt, err := db.Prepare(query)
 	if err != nil {
 		log.Fatal(err)
@@ -190,11 +188,10 @@ params := mux.Vars(request)
 }
 
 // DeletePostById deletes a post by post ID.
-func DeletePostById(response http.ResponseWriter, request *http.Request){
-params := mux.Vars(request)
+func DeletePostById(response http.ResponseWriter, request *http.Request) {
+	params := mux.Vars(request)
 	id, err := strconv.Atoi(params["id"])
 	query := "DELETE FROM POSTS WHERE ID = ?;"
-	db := getDB()
 	_, err = db.Query(query, id)
 	if err != nil {
 		log.Fatal(err)
@@ -202,18 +199,18 @@ params := mux.Vars(request)
 	response.WriteHeader(http.StatusOK)
 }
 
-func main(){
+func main() {
 	router := mux.NewRouter()
-	router.Handle("/posts",AuthMiddleware(http.HandlerFunc(CreatePost))).Methods("POST")
-	router.Handle("/posts",AuthMiddleware(http.HandlerFunc(GetAllRecentPosts))).Methods("GET")
-	router.Handle("/posts/{id}",AuthMiddleware(http.HandlerFunc(GetPostById))).Methods("GET")
-	router.Handle("/posts/{id}",AuthMiddleware(http.HandlerFunc(DeletePostById))).Methods("DELETE")
-	router.Handle("/posts/{id}",AuthMiddleware(http.HandlerFunc(UpdatePostById))).Methods("PUT")
-	router.Handle("/posts/author/{authorId}",AuthMiddleware(http.HandlerFunc(GetAllPostsByAuthorId))).Methods("GET")
+	router.Handle("/posts", AuthMiddleware(http.HandlerFunc(CreatePost))).Methods("POST")
+	router.Handle("/posts", AuthMiddleware(http.HandlerFunc(GetAllRecentPosts))).Methods("GET")
+	router.Handle("/posts/{id}", AuthMiddleware(http.HandlerFunc(GetPostById))).Methods("GET")
+	router.Handle("/posts/{id}", AuthMiddleware(http.HandlerFunc(DeletePostById))).Methods("DELETE")
+	router.Handle("/posts/{id}", AuthMiddleware(http.HandlerFunc(UpdatePostById))).Methods("PUT")
+	router.Handle("/posts/author/{authorId}", AuthMiddleware(http.HandlerFunc(GetAllPostsByAuthorId))).Methods("GET")
 	// CORS configuration
 	corsHandler := cors.New(cors.Options{
 		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE"},
-		AllowedHeaders:   []string{"*"},
+		AllowedHeaders: []string{"*"},
 	}).Handler(router)
 	http.Handle("/", corsHandler)
 	port := "5001"
